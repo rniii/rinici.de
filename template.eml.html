@@ -1,0 +1,72 @@
+open Lwt.Syntax
+open Server
+
+let template ?head body =
+  <!doctype html>
+  <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta name="theme-color" content="#d895ee">
+      <link rel="icon" href="/ico.png">
+%     head |> Option.iter begin fun head ->
+        <%s! head %>
+%     end;
+    </head>
+    <body>
+      <%s! body %>
+    </body>
+  </html>
+
+let links = [
+  ("https://codeberg.org/rini",   "codeberg.org/rini");
+  ("https://github.com/rniii",    "github.com/rniii");
+  ("https://ko-fi.com/rniii",     "ko-fi.com/rniii");
+  ("https://wetdry.world/@rini",  "@rini@wetdry.world");
+]
+
+let home req =
+  let head =
+    <title>~rini</title>
+  in
+  template ~head @@
+  <main>
+    <section>
+      <h1>Welcome!</h1>
+
+      <iframe src="/chat" frameborder="0"></iframe>
+      <iframe hidden name="null"></iframe>
+      <form action="/chat" method="post" target="null">
+        <%s! Dream.csrf_tag req %>
+        <input name="text">
+      </form>
+    </section>
+
+    <nav>
+      <h2>LINKS</h2>
+      <p>Find me here!</p>
+
+      <ul>
+%       links |> List.iter begin fun (href, text) ->
+        <li><a href="<%s href %>"><%s text %></a></li>
+%       end;
+        <li><a href="mailto:rini%40rinici.de">rini<span>@</span>rinici.de</a></li>
+      </ul>
+    </nav>
+
+    <footer>
+    </footer>
+  </main>
+
+let chat response =
+  %% response
+  <!doctype html>
+  <ul>
+%   let rec message () =
+%     let* () = Dream.flush response in
+%     let* text = Lwt_stream.next chat_history in
+      <li><time><%s timestamp () %></time> <%s text %></li>
+%     message ()
+%   in
+%   let* () = message () in
+  </ul>
