@@ -1,0 +1,26 @@
+@font-face {
+  font-family: ark tiny;
+  src: url(/assets/arkt10.woff2) format(woff2), url(/assets/arkt10.ttf);
+}
+
+body {
+  color: #d5d5d5;
+  font: 20px/24px ark tiny;
+  text-shadow: 2px 2px var(--shadow, #3b3b3b);
+  text-underline-offset: 2px;
+  margin: 0;
+  background: #151515;
+}
+
+h1, h2 {
+  color: #f0f0f0;
+  font-weight: 400;
+  font-size: 20px; 
+  text-shadow: 2px 0 currentColor, 2px 2px #4e4e4e, 4px 2px #808080;
+  letter-spacing: 2px;
+}
+
+a {
+  color: #d895ee;
+  text-decoration: 2px underline;
+}

@@ -1,0 +1,16 @@
+@import "base.css";
+
+body {
+  display: flex;
+  padding: 4ch;
+  flex-wrap: wrap;
+  gap: 4ch;
+}
+
+main {
+  flex: 0 0 90ch;
+}
+
+footer {
+  flex: 100%;
+}
