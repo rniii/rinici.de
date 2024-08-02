@@ -2,9 +2,9 @@
 
 module Pages (home) where
 
+import Control.Monad (forM_)
 import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
-import Control.Monad (forM_)
 
 attr :: Tag -> AttributeValue -> Attribute
 attr = customAttribute
@@ -17,8 +17,10 @@ home = layout head $ do
     section $ do
       h2 "intra relay cat"
 
-      iframe ! src "/chat" ! attr "frameborder" "0" $ mempty
+      iframe ! src "/chat" ! attr "frameborder" "0" ! A.id "chat" $ mempty
       iframe ! hidden "" ! name "null" $ mempty
+      -- trick your browser into loading the page
+      script "chat.src='',setTimeout(()=>chat.src='/chat',500)"
 
       H.form ! action "/chat" ! method "post" ! target "null" $ do
         "chat> "

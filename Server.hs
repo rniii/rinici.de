@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main (Main.main) where
+module Main (main) where
 
 import Control.Concurrent.Chan (Chan, dupChan, newChan, readChan, writeChan)
 import Control.Monad (forever)
@@ -41,7 +41,7 @@ main = do
 chatView :: Chan Text -> StreamingBody
 chatView chat write flush = do
   chat <- dupChan chat
-  write "<!doctype html><link rel=stylesheet href=/assets/chat.css><ul>"
+  write "<!doctype html><meta charset=utf-8><link rel=stylesheet href=/assets/chat.css><ul>"
   write $ renderMessage ":3"
   flush
   forever $ do
