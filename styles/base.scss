@@ -1,26 +1,46 @@
-@font-face {
-  font-family: ark tiny;
-  src: url(/assets/arkt10.woff2) format(woff2), url(/assets/arkt10.ttf);
-}
-
 body {
-  color: #d5d5d5;
-  font: 20px/24px ark tiny;
-  text-shadow: 2px 2px var(--shadow, #3b3b3b);
-  text-underline-offset: 2px;
-  margin: 0;
+  font: 500 20px "Source Sans 3";
+  color: #d8d0d5;
   background: #151515;
+  margin: 0;
 }
 
-h1, h2 {
-  color: #f0f0f0;
-  font-weight: 400;
-  font-size: 20px; 
-  text-shadow: 2px 0 currentColor, 2px 2px #4e4e4e, 4px 2px #808080;
-  letter-spacing: 2px;
+h1,
+h2,
+h3 {
+  font-size: 1.5rem;
 }
 
+h2::before {
+  content: "∷ ";
+  color: #979ae8;
+}
+
+pre,
+code {
+  font-family: monospace;
+  font-variant-ligatures: none;
+}
+
+strong {
+  color: #e8d097;
+}
+b {
+  color: #ca97e8;
+}
 a {
   color: #d895ee;
-  text-decoration: 2px underline;
+}
+
+sup {
+  font-size: 0.7em;
+}
+
+ul li::marker {
+  content: "⇒ ";
+  color: #979ae8;
+}
+
+input {
+  all: unset;
 }

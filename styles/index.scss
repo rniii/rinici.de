@@ -2,15 +2,20 @@
 
 body {
   display: flex;
-  padding: 4ch;
   flex-wrap: wrap;
-  gap: 4ch;
+  gap: 20px;
+  width: 120ch;
+  margin: 20px auto;
 }
 
 main {
-  flex: 0 0 90ch;
+  flex: 0 0 800px;
 }
 
 footer {
   flex: 100%;
+}
+
+iframe {
+  width: 100%;
 }
