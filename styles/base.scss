@@ -1,3 +1,15 @@
+@font-face {
+  font-family: "Source Sans 3";
+  font-weight: 200 900;
+  src: url(/assets/ss3.woff2) format(woff2);
+}
+@font-face {
+  font-family: "Source Sans 3";
+  font-weight: 200 900;
+  font-style: italic;
+  src: url(/assets/ss3i.woff2) format(woff2);
+}
+
 body {
   font: 500 20px "Source Sans 3";
   color: #d8d0d5;
@@ -5,7 +17,10 @@ body {
   margin: 0;
 }
 
-h1,
+h1 {
+  font-size: 1.8rem;
+}
+
 h2,
 h3 {
   font-size: 1.5rem;
@@ -22,8 +37,11 @@ code {
   font-variant-ligatures: none;
 }
 
-strong {
+strong, em {
   color: #e8d097;
+}
+i {
+  color: #909090;
 }
 b {
   color: #ca97e8;

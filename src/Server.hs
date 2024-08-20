@@ -6,7 +6,7 @@ module Main (main) where
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM (atomically, dupTChan, newBroadcastTChanIO)
 import Control.Concurrent.STM.TChan (TChan, readTChan, writeTChan)
-import Control.Monad (forever, unless, void, (>=>))
+import Control.Monad (forever, unless, void)
 import qualified Data.Binary.Builder as BB
 import qualified Data.ByteString.Base64.URL as Base64
 import Data.Default (def)
@@ -75,7 +75,7 @@ chatSend app sess text
       uncurry chatCommand $ T.break (== ' ') text
   where
     chatCommand cmd args
-      | cmd == "/nick", isValidNick args = setSession app sess{sessNick = args}
+      | cmd == "nick", isValidNick args = setSession app sess{sessNick = args}
       | otherwise = return ()
 chatSend app sess text = liftIO $ do
   time <- getCurrentTime

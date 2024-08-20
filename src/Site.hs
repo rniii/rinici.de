@@ -9,10 +9,14 @@ import Control.Monad (forM_, when)
 import Control.Monad.Reader (MonadIO (liftIO))
 import Control.Monad.State (MonadState, StateT, execStateT, modify)
 import Data.Bool (bool)
+import qualified Data.ByteString as BS
 import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
+import Data.Char (isDigit)
+import Data.Functor ((<&>))
 import Data.List ((\\))
 import Data.Maybe (fromMaybe)
+import qualified Data.Text.Encoding as E
 import System.Directory (createDirectoryIfMissing, doesDirectoryExist, getModificationTime, listDirectory, removeFile)
 import System.Environment (getExecutablePath)
 import System.FilePath (combine, joinPath, replaceExtension, splitFileName, splitPath, takeDirectory)
@@ -22,7 +26,6 @@ import System.IO.Temp (withSystemTempFile)
 import System.Process.Typed (byteStringInput, proc, readProcessStdout_, setStdin)
 import Text.Blaze.Html (Html)
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
-import Data.Char (isDigit)
 
 main :: IO ()
 main = compileAll $ do
@@ -31,18 +34,19 @@ main = compileAll $ do
     output $ joinPath . tail . splitPath
   transformDir "styles" $ do
     output $ extension "css"
-    sassCompiler
+    compiler sass
   transformDir "posts" $ do
     -- yyyy-mm-dd-post -> post
     output $ uncurry combine . fmap removeDate . splitFileName
     output $ extension "html"
-    pandocCompiler blogTemplate
+    compiler $ pandoc blogTemplate
   writeTo "index.html" $ do
-    minifyHtml $ renderHtml home
+    posts <- readProcessStdout_ (proc "maid" ["-q", "generate-list"]) <&> E.decodeUtf8 . BS.toStrict
+    minifyHtml $ renderHtml $ home posts
   writeTo "chat.html" $ do
     minifyHtml $ renderHtml chat
   writeTo "posts/atom.xml" $ do
-    readProcessStdout_ (proc "maid" ["-q", "generate-feed"])
+    readProcessStdout_ $ proc "maid" ["-q", "generate-feed"]
   where
     removeDate = removePart . removePart . removePart
     removePart = dropWhile (== '-') . dropWhile isDigit
@@ -93,17 +97,17 @@ output :: (FilePath -> FilePath) -> Action ()
 output f =
   modify $ \r -> r{rsOutput = f $ rsOutput r}
 
-pandocCompiler :: Html -> Action ()
-pandocCompiler template = compiler $ \bs -> do
+pandoc :: Html -> ByteString -> Compiler ByteString
+pandoc template bs = do
   liftIO $ withSystemTempFile "tmpl.html" $ \p h -> do
     B.hPutStr h $ renderHtml template
     hClose h
     pipe "pandoc" ["-fmarkdown-auto_identifiers", "--wrap=none", "--template", p] bs
       >>= minifyHtml
 
-sassCompiler :: Action ()
-sassCompiler =
-  compiler $ pipe "sass" ["-", "-scompressed"]
+sass :: ByteString -> Compiler ByteString
+sass =
+  pipe "sass" ["-", "-scompressed"]
 
 compiler :: (ByteString -> Compiler ByteString) -> Action ()
 compiler c =

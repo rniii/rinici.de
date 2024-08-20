@@ -9,7 +9,11 @@ body {
 }
 
 main {
-  flex: 0 0 800px;
+  flex: 0 0 80ch;
+}
+
+nav {
+  flex: min-content;
 }
 
 footer {
@@ -18,4 +22,7 @@ footer {
 
 iframe {
   width: 100%;
+}
+iframe[src="/chat"] {
+  height: 2em;
 }

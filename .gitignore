@@ -1,3 +1,5 @@
 dist-newstyle/
 _site/
-public/ # secret :3
+# secret :3
+public/
+.env

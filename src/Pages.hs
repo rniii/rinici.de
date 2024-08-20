@@ -3,20 +3,21 @@
 module Pages (home, chat, blogTemplate) where
 
 import Control.Monad (forM_)
+import Data.Text (Text)
 import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
 
 attr :: Tag -> AttributeValue -> Attribute
 attr = customAttribute
 
-home :: Html
-home = layout head $ do
+home :: Text -> Html
+home posts = layout head $ do
   main $ do
-    h1 $ code $ mconcat [b "data", " ", strong "rini", " c ", b "where"]
-    p "Hey there!"
+    h1 $ code $ b "data " <> strong "rini " <> "c " <> b "where"
+    p "nya"
 
     section $ do
-      h2 "intra relay cat"
+      h2 "Intra Relay Cat"
       p $ do
         "Sent directly to Discord, no JavaScript needed! "
         "I apologise if your page is stuck loading forever, though. "
@@ -31,20 +32,18 @@ home = layout head $ do
     p "Find me here!"
     ul $ forM_ links $ \(url, text) ->
       li $ a ! href url $ text
-    h2 "Latest posts"
+    h2 "Blog posts"
     p $ do
-      "Also available as an " <> (a ! href "/posts/atom.xml") "atom feed" <> "!"
-    ul $ do
-      li $ do
-        a ! href "/posts/streaming-html" $ "The Cursed Art of Streaming HTML"
-        br
-        i "rini c. on Aug 18, 2024"
+      "Also available as an " <> (a ! href "/posts/atom.xml") "atom feed!"
+    ul $ preEscapedText posts
 
   footer $ do
-    "Copyright © 2024 rini" <> br <> br
-    "Made with much λ. Unless stated otherwise, all content is licensed under the "
-    a ! href "https://creativecommons.org/licenses/by-sa/4.0/" $ "CC BY-SA 4.0"
-    " license."
+    p "Copyright © 2024 rini"
+    p $ do
+      "Unless stated otherwise, all content is licensed under the "
+      a ! href "https://creativecommons.org/licenses/by-sa/4.0/" $ "CC BY-SA 4.0"
+      " license."
+    p "With love to Anika 💜"
   where
     head = do
       H.title "home ∷ ~rini"
@@ -63,7 +62,7 @@ home = layout head $ do
 chat :: Html
 chat = layout head $ do
   H.form ! method "post" ! action "/chat/history" $ do
-    input ! name "text" ! placeholder "Send a message..."
+    input ! name "text" ! autofocus "" ! placeholder "Send a message..."
   where
     head = do
       link ! rel "stylesheet" ! href "/styles/base.css"
@@ -72,13 +71,17 @@ blogTemplate :: Html
 blogTemplate = layout head $ do
   header $ do
     h1 "$title$"
+    p ! class_ "meta" $ do
+      a ! href "$author.url$" $ "$author.name$"
+      " on "
+      time ! datetime "$date-meta$" $ "$date$"
     p ! class_ "subtitle" $ "$subtitle$"
-    p ! class_ "meta" $ b "$author$" <> " on " <> (time ! datetime "$date-meta$") "$date$"
   "$body$"
   where
     head = do
       H.title "$title$ ∷ ~rini"
       link ! rel "stylesheet" ! href "/styles/blog.css"
+      link ! rel "author" ! href "$author.url$"
       meta ! property "og:title" ! content "$title$"
 
 layout :: Html -> Html -> Html

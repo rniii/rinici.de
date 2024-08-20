@@ -12,14 +12,15 @@ header {
     font-size: 1.8em;
     margin: 0;
   }
-  .subtitle {
+  p {
     margin-top: 0;
-    color: #909090;
     font-style: italic;
+  }
+  .subtitle {
+    color: #909090;
   }
   .meta {
     float: right;
-    margin-top: 0;
   }
 }
 
