@@ -40,13 +40,17 @@ main = compileAll $ do
     output $ uncurry combine . fmap removeDate . splitFileName
     output $ extension "html"
     compiler $ pandoc blogTemplate
+  transformDir "pages" $ do
+    output $ joinPath . tail . splitPath
+    output $ extension "html"
+    compiler $ pandoc pageTemplate
   writeTo "index.html" $ do
-    posts <- readProcessStdout_ (proc "maid" ["-q", "generate-list"]) <&> E.decodeUtf8 . BS.toStrict
+    posts <- readProcessStdout_ "maid -q generate-list" <&> E.decodeUtf8 . BS.toStrict
     minifyHtml $ renderHtml $ home posts
   writeTo "chat.html" $ do
     minifyHtml $ renderHtml chat
   writeTo "posts/atom.xml" $ do
-    readProcessStdout_ $ proc "maid" ["-q", "generate-feed"]
+    readProcessStdout_ "maid -q generate-feed"
   where
     removeDate = removePart . removePart . removePart
     removePart = dropWhile (== '-') . dropWhile isDigit
@@ -82,8 +86,8 @@ transformDir path body =
     execStateT (runAction body) $ Resource (Just p) p (liftIO $ B.readFile p)
 
 addResources :: [Resource] -> Rules ()
-addResources resources =
-  modify (mappend resources)
+addResources =
+  modify . mappend
 
 traverseDirectory :: FilePath -> (FilePath -> IO a) -> IO [a]
 traverseDirectory path f =
@@ -102,7 +106,7 @@ pandoc template bs = do
   liftIO $ withSystemTempFile "tmpl.html" $ \p h -> do
     B.hPutStr h $ renderHtml template
     hClose h
-    pipe "pandoc" ["-fmarkdown-auto_identifiers", "--wrap=none", "--template", p] bs
+    pipe "pandoc" ["-fmarkdown-auto_identifiers-smart", "--wrap=none", "--template", p] bs
       >>= minifyHtml
 
 sass :: ByteString -> Compiler ByteString
@@ -121,6 +125,7 @@ minifyHtml =
     [ "--do-not-minify-doctype"
     , "--ensure-spec-compliant-unquoted-attribute-values"
     , "--keep-spaces-between-attributes"
+    , "--keep-closing-tags"
     ]
 
 pipe :: MonadIO m => FilePath -> [String] -> ByteString -> m ByteString

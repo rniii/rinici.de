@@ -1,0 +1,10 @@
+<!doctype html><body style=margin:0;overflow:hidden title='Right click me!'bgcolor=#0ab
+onload='c=c.getContext`2d`,f=h=0,u=[],w=9
+m=(...i)=>c.fillRect?.(...i)|c.strokeRect?.(...i)
+setInterval(z=>{w++>42&&u.shift(w=0)
+for(h+=f+=0.15;u.length<3;)u.push(Math.random()*5+Math.random()*5);c.clearRect?.(0,0,99,99)
+c.strokeRect?.(0,0,88,31)
+c.fillStyle=`#ff0`,m(9,h,5,5),c.fillStyle=`#2f2`
+u.map((z,i)=>(m(i=i*44-w,17+z,5,99),m(i,0,5,3+z),m(i-=1,z,7,3),m(i,z+17,7,3)))
+h<0||h>25||w>30&&w<39&&(h<u[1]||h>u[1]+12)?c=setTimeout(z=>location.reload(),2000):0},49)'onclick=h-=6,f=0
+oncontextmenu='return!!r.click()'><canvas id=c><a id=r target=_blank href=https://rinici.de/buttons>

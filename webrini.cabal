@@ -22,7 +22,6 @@ executable server
     binary ^>= 0.8,
     bytestring ^>= 0.11,
     clientsession ^>= 0.9.3,
-    containers,
     data-default ^>= 0.7,
     http-types ^>= 0.12,
     mtl ^>= 2.2,

@@ -26,40 +26,37 @@ find posts/*.md \
 maid -q meta | \
   yq ea 'with_dtf("Jan 2 2006";
     [.] | sort_by(.date) | reverse[]
-        | "<li><a href=\"\(.url)\">\(.title)</a><br>\(.subtitle) <i>— \(.author.name) on \(.date)</i>")'
+        | "<article><h3><a href=\"\(.url)\">\(.title)</a></h3><i>\(.subtitle)</i><br>\(.date)</article>")'
 ```
 
 ### generate-feed
 
 ```sh
 maid -q meta | \
-  yq ea '
-    { "entry":
-      { "title": .title
-      , "author": {"name": .author.name, "email": .author.email, "uri": .author.url}
-      , "link": {"+@href": .url}
-      , "id": "https://rinici.de" + .url
-      , "updated": .date | with_dtf("Jan 2, 2006"; format_datetime("2006-01-02T15:04:05Z07:00"))
-      , "content": {"+@src": .url, "+@type": "html"}
-      , "summary": .subtitle
-      }
-    }' -oxml | \
-  yq '
+  yq ea -oxml '(
     { "+p_xml": "version=\"1.0\" encoding=\"utf-8\""
     , "feed":
       { "+@xmlns": "http://www.w3.org/2005/Atom"
       , "title": "rini blog"
       , "link":
-        [ {"+@href": "http://localhost:8000"}
-        , {"+@href": "http://localhost:8000/posts/atom.xml", "+@rel": "self"}
+        [ {"+@href": "http://rinici.de/"}
+        , {"+@href": "http://rinici.de/posts/atom.xml", "+@rel": "self"}
         ]
       , "icon": "/ico.png"
       , "rights": "© 2024 rini"
       , "id": "https://rinici.de/"
       , "updated": now | tz("UTC")
-      , "entry": (.entry | sort_by(.updated) | reverse)
+      , "entry": [.] | sort_by(.date) | reverse[] |
+        { "title": .title
+        , "author": (.author | (select(type == "!!seq").0 // .) | {"name": .name, "uri": .url})
+        , "link": {"+@href": .url}
+        , "id": "https://rinici.de" + .url
+        , "updated": .date | with_dtf("Jan 2, 2006"; format_datetime("2006-01-02T15:04:05Z07:00"))
+        , "content": {"+@src": .url, "+@type": "html"}
+        , "summary": .subtitle
+        }
       }
-    }' -pxml -oxml
+    })'
 ```
 
 ### new-post

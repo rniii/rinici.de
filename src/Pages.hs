@@ -1,20 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Pages (home, chat, blogTemplate) where
+module Pages (home, chat, blogTemplate, pageTemplate) where
 
 import Control.Monad (forM_)
 import Data.Text (Text)
 import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
 
-attr :: Tag -> AttributeValue -> Attribute
-attr = customAttribute
-
 home :: Text -> Html
 home posts = layout head $ do
   main $ do
-    h1 $ code $ b "data " <> strong "rini " <> "c " <> b "where"
-    p "nya"
+    h1 "Welcome!"
+    p $ do
+      "This is my little place for the stuff I make. I usually go by just rini!"
+    ul $ do
+      li "test"
 
     section $ do
       h2 "Intra Relay Cat"
@@ -44,25 +44,42 @@ home posts = layout head $ do
       a ! href "https://creativecommons.org/licenses/by-sa/4.0/" $ "CC BY-SA 4.0"
       " license."
     p "With love to Anika 💜"
+      i $ a ! href "/buttons" $ "I want those!"
+
+  pageFooter
   where
     head = do
-      H.title "home ∷ ~rini"
+      H.title "rini"
       link ! rel "stylesheet" ! href "/styles/index.css"
       link ! rel "alternate" ! type_ "application/atom+xml" ! href "/posts/atom.xml" ! A.title "Blog posts"
-      meta ! property "og:title" ! content "~rini"
-      meta ! property "og:description" ! content "Lambda Cube Shrine"
     links =
-      [ ("https://codeberg.org", "codeberg.org/rini")
-      , ("https://github.com/rniii", "github.com/rniii")
+      [ ("https://github.com/rniii", "github.com/rniii")
+      , ("https://codeberg.org", "codeberg.org/rini")
       , ("https://ko-fi.com/rniii", "ko-fi.com/rniii")
       , ("https://wetdry.world/@rini", "@wetdry.world@rini")
       , ("mailto:rini%40rinici.de", "rini" <> H.span "@" <> "rinici.de")
+      ]
+    buttons =
+      [ ("https://authenyo.xyz", "/buttons/authen.gif")
+      , ("https://sheepy.moe", "/buttons/sheepy.gif")
+      , ("https://velzie.rip", "/buttons/velzie.gif")
+      , ("https://w.on-t.work", "/buttons/wontwork.png")
+      , ("https://tengu.space", "/buttons/tengu.gif")
+      , ("https://smokepowered.com", "/buttons/smoke.gif")
+      , ("https://store.steampowered.com/app/70/HalfLife/", "/buttons/hl.gif")
+      , ("https://book.realworldhaskell.org/read/getting-started.html", "/buttons/haskell.gif")
       ]
 
 chat :: Html
 chat = layout head $ do
   H.form ! method "post" ! action "/chat/history" $ do
-    input ! name "text" ! autofocus "" ! placeholder "Send a message..."
+    input
+      ! A.id "chatbox"
+      ! name "text"
+      ! placeholder "Send a message..."
+      ! autocomplete "off"
+      ! minlength "1"
+      ! required ""
   where
     head = do
       link ! rel "stylesheet" ! href "/styles/base.css"
@@ -70,13 +87,17 @@ chat = layout head $ do
 blogTemplate :: Html
 blogTemplate = layout head $ do
   header $ do
+    H.div ! A.style "float:right" $ do
+      "$for(author)$"
+      a ! href "$author.url$" $ do
+        img ! src "/pfps/$author.name$.gif"
+      "$endfor$"
     h1 "$title$"
-    p ! class_ "meta" $ do
-      a ! href "$author.url$" $ "$author.name$"
-      " on "
-      time ! datetime "$date-meta$" $ "$date$"
     p ! class_ "subtitle" $ "$subtitle$"
-  "$body$"
+    p $ time "$date$" ! datetime "$date-meta$"
+  main $ do
+    "$body$"
+  pageFooter
   where
     head = do
       H.title "$title$ ∷ ~rini"
