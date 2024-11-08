@@ -128,10 +128,19 @@ proxyMessages chat webhook = do
       req
         POST
         (fst $ fromJust $ useHttpsURI webhook)
-        (ReqBodyJson (object ["content" .= escapeText msg.text, "username" .= msg.nick]))
+        ( ReqBodyJson
+            ( object
+                [ "content" .= escapeText msg.text
+                , "username" .= msg.nick
+                , "allowed_mentions" .= allowedMentions
+                ]
+            )
+        )
         ignoreResponse
         mempty
   where
+    allowedMentions = object ["parse" .= ([] :: [()])]
+
     escapeText = T.concatMap $ \case
       c | c `elem` ("#*<>_^`~" :: String) -> T.snoc "\\" c
       c -> T.singleton c
