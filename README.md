@@ -24,9 +24,9 @@ find posts/*.md \
 
 ```sh
 maid -q meta | \
-  yq ea 'with_dtf("Jan 2 2006";
+  yq ea 'with_dtf("Jan. 2 2006";
     [.] | sort_by(.date) | reverse[]
-        | "<article><h3><a href=\"\(.url)\">\(.title)</a></h3><i>\(.subtitle)</i><br>\(.date)</article>")'
+        | "<article><h3><a href=\"\(.url)\">\(.title)</a></h3><p>\(.subtitle)</p></article>")'
 ```
 
 ### generate-feed
@@ -51,7 +51,7 @@ maid -q meta | \
         , "author": (.author | (select(type == "!!seq").0 // .) | {"name": .name, "uri": .url})
         , "link": {"+@href": .url}
         , "id": "https://rinici.de" + .url
-        , "updated": .date | with_dtf("Jan 2, 2006"; format_datetime("2006-01-02T15:04:05Z07:00"))
+        , "updated": .date | with_dtf("Jan. 2, 2006"; format_datetime("2006-01-02T15:04:05Z07:00"))
         , "content": {"+@src": .url, "+@type": "html"}
         , "summary": .subtitle
         }
@@ -80,6 +80,7 @@ echo "Created $post"
 ```sh
 maid -w . generate &
 maid serve &
+live-server --middleware=$(realpath mw.js) --proxy=/chat/history:http://localhost:8000/chat/history _site &
 wait
 ```
 

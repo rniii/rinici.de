@@ -17,6 +17,7 @@ executable server
   main-is:        Server.hs
   hs-source-dirs: src
   build-depends:
+    aeson ^>= 2.2,
     blaze-html ^>= 0.9.2,
     base64-bytestring ^>= 1.2,
     binary ^>= 0.8,
@@ -24,8 +25,10 @@ executable server
     clientsession ^>= 0.9.3,
     data-default ^>= 0.7,
     http-types ^>= 0.12,
+    modern-uri,
     mtl ^>= 2.2,
     random ^>= 1.2,
+    req ^>= 3.13,
     scotty ^>=0.22,
     stm ^>= 2.5,
     text ^>= 2.0,

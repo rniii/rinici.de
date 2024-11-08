@@ -6,7 +6,7 @@ module Main (main) where
 import Pages
 
 import Control.Monad (forM_, when)
-import Control.Monad.Reader (MonadIO (liftIO))
+import Control.Monad.Reader (MonadIO (liftIO), ReaderT (runReaderT), MonadReader, asks)
 import Control.Monad.State (MonadState, StateT, execStateT, modify)
 import Data.Bool (bool)
 import qualified Data.ByteString as BS
@@ -14,12 +14,12 @@ import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
 import Data.Char (isDigit)
 import Data.Functor ((<&>))
-import Data.List ((\\))
+import Data.List ((\\), intercalate)
 import Data.Maybe (fromMaybe)
 import qualified Data.Text.Encoding as E
 import System.Directory (createDirectoryIfMissing, doesDirectoryExist, getModificationTime, listDirectory, removeFile)
 import System.Environment (getExecutablePath)
-import System.FilePath (combine, joinPath, replaceExtension, splitFileName, splitPath, takeDirectory)
+import System.FilePath (combine, joinPath, replaceExtension, splitFileName, splitPath, takeDirectory, splitDirectories, dropExtensions)
 import System.IO (hClose)
 import System.IO.Error (catchIOError)
 import System.IO.Temp (withSystemTempFile)
@@ -33,8 +33,7 @@ main = compileAll $ do
     -- public/ -> /
     output $ joinPath . tail . splitPath
   transformDir "styles" $ do
-    output $ extension "css"
-    compiler sass
+    compiler esbuildCss
   transformDir "posts" $ do
     -- yyyy-mm-dd-post -> post
     output $ uncurry combine . fmap removeDate . splitFileName
@@ -74,7 +73,8 @@ compileAll rules = do
     when (srcMTime >= dstMTime) $ do
       putStrLn ("Writing " ++ dst)
       createDirectoryIfMissing True (takeDirectory dst)
-      runCompiler (rsContents res) >>= B.writeFile dst
+      runReaderT (runCompiler (rsContents res)) res
+        >>= B.writeFile dst
 
 writeTo :: FilePath -> IO ByteString -> Rules ()
 writeTo path body =
@@ -103,15 +103,16 @@ output f =
 
 pandoc :: Html -> ByteString -> Compiler ByteString
 pandoc template bs = do
+  input <- asks (intercalate " > " . splitDirectories . dropExtensions . rsOutput)
   liftIO $ withSystemTempFile "tmpl.html" $ \p h -> do
     B.hPutStr h $ renderHtml template
     hClose h
-    pipe "pandoc" ["-fmarkdown-auto_identifiers-smart", "--wrap=none", "--template", p] bs
+    pipe "pandoc" ["-fmarkdown-auto_identifiers-smart", "--wrap=none", "--template", p, "-Vpath:" ++ input] bs
       >>= minifyHtml
 
-sass :: ByteString -> Compiler ByteString
-sass =
-  pipe "sass" ["-", "-scompressed"]
+esbuildCss :: ByteString -> Compiler ByteString
+esbuildCss =
+  pipe "esbuild" ["--minify", "--loader=css", "--supported:nesting=false"]
 
 compiler :: (ByteString -> Compiler ByteString) -> Action ()
 compiler c =
@@ -144,5 +145,5 @@ data Resource = Resource
   , rsContents :: Compiler ByteString
   }
 
-newtype Compiler a = Compiler {runCompiler :: IO a}
-  deriving (Functor, Applicative, Monad, MonadIO)
+newtype Compiler a = Compiler {runCompiler :: ReaderT Resource IO a}
+  deriving (Functor, Applicative, Monad, MonadIO, MonadReader Resource)

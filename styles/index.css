@@ -1,0 +1,70 @@
+@import "base.css";
+
+body {
+  max-width: 66em;
+  margin: 2em auto;
+  padding: 8px;
+}
+
+body, .side {
+  display: flex;
+  flex-wrap: wrap;
+}
+.side {
+  flex-direction: column;
+  flex: 1 0 23em;
+  gap: 8px;
+}
+
+h1::before,
+h2::before {
+  content: "∷ ";
+  font-style: normal;
+  color: #979ae8;
+}
+
+main {
+  flex: 1 0 40em;
+}
+
+footer {
+  flex: 100%;
+}
+
+iframe[src="/chat/history"] {
+  display: block;
+  width: 100%;
+  height: 14em;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+iframe[src="/chat"] {
+  display: block;
+  width: 100%;
+  height: 2em;
+  margin-top: 8px;
+}
+
+article {
+  color: #ababab;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 0 1em;
+  margin: 8px 0;
+  h3 a {
+    color: #d8d0d5;
+    text-decoration: none;
+  }
+  p {
+    font-style: italic;
+  }
+}
+
+.frame {
+  position: relative;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 8px;
+}

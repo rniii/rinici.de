@@ -12,39 +12,46 @@ home posts = layout head $ do
   main $ do
     h1 "Welcome!"
     p $ do
-      "This is my little place for the stuff I make. I usually go by just rini!"
-    ul $ do
-      li "test"
+      "My little place on the internet for rants and weird web toys. I usually go by just Rini."
+    p "Have a look around!"
 
-    section $ do
-      h2 "Intra Relay Cat"
-      p $ do
-        "Sent directly to Discord, no JavaScript needed! "
-        "I apologise if your page is stuck loading forever, though. "
-        a ! href "/blog/streaming-html" $ "Because it is."
-      iframe ! src "/chat/history" ! attr "frameborder" "0" ! A.id "chat" $ mempty
-      iframe ! src "/chat" ! attr "frameborder" "0" $ mempty
+    h2 $ "Blog posts " <> a (img ! src "/rss.gif") ! href "/posts/atom.xml"
+    H.div ! class_ "posts" $ do
+      preEscapedText posts
+
+    h2 "Intra Relay Cat"
+    blockquote $ p "No JavaScript required!"
+    H.div ! class_ "frame" $ do
+      iframe mempty ! src "/chat/history" ! A.id "chat"
+      iframe mempty ! src "/chat"
       -- trick your browser into loading the page
-      script "chat.src='',setTimeout(()=>chat.src='/chat/history',500)"
+      script "chat.src='',setTimeout(()=>chat.src='/chat/history',900)"
 
-  nav $ do
-    h2 $ mconcat [b "∀", "c", i ". ", strong "rini", " c ", i "→ ", strong "link"]
-    p "Find me here!"
-    ul $ forM_ links $ \(url, text) ->
-      li $ a ! href url $ text
-    h2 "Blog posts"
-    p $ do
-      "Also available as an " <> (a ! href "/posts/atom.xml") "atom feed!"
-    ul $ preEscapedText posts
+  H.div ! class_ "side" $ do
+    nav $ do
+      h2 "Links"
+      p "Find me here!"
+      ul $ forM_ links $ \(url, text) ->
+        li $ a text ! href url
 
-  footer $ do
-    p "Copyright © 2024 rini"
-    p $ do
-      "Unless stated otherwise, all content is licensed under the "
-      a ! href "https://creativecommons.org/licenses/by-sa/4.0/" $ "CC BY-SA 4.0"
-      " license."
-    p "With love to Anika 💜"
-      i $ a ! href "/buttons" $ "I want those!"
+      p "I'll likely be able to reply if you DM me on fedi or send me an email"
+
+    section ! A.style "flex:1" $ do
+      h2 "Stuff"
+      ul $ do
+        li $ a "Playable 88x31s" ! href "/buttons"
+        li $ a "Color palette" ! href "/colors"
+
+      p $ do
+        forM_ buttons $ \(url, gif) -> do
+          a ! href url $ img ! src gif
+          " "
+        forM_ ["snake", "flappy", "dvd", "sand"] $ \url -> do
+          iframe mempty ! src ("/buttons/" <> url) ! width "88" ! height "31"
+          " "
+        blockquote "Do hotlink my button!"
+
+        pre $ code "<a href=\"https://rinici.de\">\n  <img src=\"https://rinici.de/button.png\">\n</a>"
 
   pageFooter
   where
@@ -54,20 +61,24 @@ home posts = layout head $ do
       link ! rel "alternate" ! type_ "application/atom+xml" ! href "/posts/atom.xml" ! A.title "Blog posts"
     links =
       [ ("https://github.com/rniii", "github.com/rniii")
-      , ("https://codeberg.org", "codeberg.org/rini")
-      , ("https://ko-fi.com/rniii", "ko-fi.com/rniii")
+      , ("https://codeberg.org/rini", "codeberg.org/rini")
+      -- , ("https://ko-fi.com/rniii", "ko-fi.com/rniii")
       , ("https://wetdry.world/@rini", "@wetdry.world@rini")
       , ("mailto:rini%40rinici.de", "rini" <> H.span "@" <> "rinici.de")
       ]
     buttons =
-      [ ("https://authenyo.xyz", "/buttons/authen.gif")
+      [ ("https://rinici.de/", "/buttons/rinicide.png")
+      , ("https://authenyo.xyz", "/buttons/authen.gif")
       , ("https://sheepy.moe", "/buttons/sheepy.gif")
-      , ("https://velzie.rip", "/buttons/velzie.gif")
+      , ("https://velzie.rip", "https://velzie.rip/88x31.png")
+      , ("https://blueb.pages.gay", "/buttons/harper.gif")
       , ("https://w.on-t.work", "/buttons/wontwork.png")
       , ("https://tengu.space", "/buttons/tengu.gif")
       , ("https://smokepowered.com", "/buttons/smoke.gif")
-      , ("https://store.steampowered.com/app/70/HalfLife/", "/buttons/hl.gif")
+      , ("steam://launch/70", "/buttons/hl.gif")
       , ("https://book.realworldhaskell.org/read/getting-started.html", "/buttons/haskell.gif")
+      , ("https://github.com/anguishjs", "/buttons/anguish.gif")
+      , ("viewsource://rinici.de/", "/buttons/somejs.gif")
       ]
 
 chat :: Html
@@ -82,28 +93,61 @@ chat = layout head $ do
       ! required ""
   where
     head = do
-      link ! rel "stylesheet" ! href "/styles/base.css"
+      link ! rel "stylesheet" ! href "/styles/partial.css"
 
 blogTemplate :: Html
 blogTemplate = layout head $ do
   header $ do
+    nav $ code $ do
+      a ! href "/" $ "Home"
+      " > $path$"
     H.div ! A.style "float:right" $ do
       "$for(author)$"
       a ! href "$author.url$" $ do
         img ! src "/pfps/$author.name$.gif"
       "$endfor$"
     h1 "$title$"
-    p ! class_ "subtitle" $ "$subtitle$"
-    p $ time "$date$" ! datetime "$date-meta$"
+    p $ i "$subtitle$"
+  main $ do
+    p ! class_ "meta" $ do
+      "Published " <> time "$date$" ! datetime "$date-meta$" <> " by "
+      "$for(author)$"
+      a ! href "$author.url$" $ do
+        "$author.name$"
+      "$sep$, "
+      "$endfor$"
+    "$body$"
+  pageFooter
+  where
+    head = do
+      H.title "$title$"
+      meta ! name "description" ! content "$subtitle$"
+      link ! rel "stylesheet" ! href "/styles/blog.css"
+      link ! rel "author" ! href "$author.url$"
+
+pageTemplate :: Html
+pageTemplate = layout head $ do
+  header $ do
+    nav $ code $ do
+      a ! href "/" $ "Home"
+      " > $path$"
+
+    h1 "$title$"
+    "$if(subtitle)$"
+    p $ i "$subtitle$"
+    "$endif$"
   main $ do
     "$body$"
   pageFooter
   where
     head = do
-      H.title "$title$ ∷ ~rini"
+      H.title "$title$"
       link ! rel "stylesheet" ! href "/styles/blog.css"
-      link ! rel "author" ! href "$author.url$"
-      meta ! property "og:title" ! content "$title$"
+
+pageFooter :: Html
+pageFooter = footer $ p $ do
+  b "© " <> "2024 rini · 🅭 🅯 🄎 "
+  a "CC-BY-SA-4.0" ! href "https://creativecommons.org/licenses/by-sa/4.0/" ! rel "license"
 
 layout :: Html -> Html -> Html
 layout head body =
@@ -114,6 +158,6 @@ layout head body =
       meta ! name "theme-color" ! content "#d895ee"
       link ! rel "icon" ! href "/ico.png"
       meta ! property "og:image" ! content "https://rinici.de/ico.png"
-      meta ! property "og:site_name" ! content "rini c."
+      meta ! property "og:site_name" ! content "rini"
       head
     H.body body

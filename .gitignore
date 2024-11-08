@@ -1,5 +1,3 @@
 dist-newstyle/
 _site/
-# secret :3
-public/
 .env

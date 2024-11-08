@@ -4,7 +4,7 @@ subtitle: Or, how I wrote a live chat without JavaScript
 author:
 - name: rini
   url: https://rinici.de/
-date: Aug 18, 2024
+date: Nov. 07, 2024
 ---
 
 When I talk about [streaming HTML]{.keyword}, I am not talking about incrementally requesting HTML to
@@ -17,9 +17,14 @@ streaming an actual HTML response, creating live updates much like a [WebSocket]
 
 Turns out, it's really easy to do! Basically every single web browser (even ancient ones) will
 request HTML with `Connection: keep-alive`, which means you get to be as slow as you want
-responding! More realistically, you can use this to make sure the most important parts of your
-webpage are sent as quickly as possible, while you fetch data for the rest. That's boring, though,
-so we're going to go for something a bit more fun.
+responding!
+
+Realistically, this can be used to make sure the most important parts of the page are loaded
+first,[^1] while the rest is loaded later. While mostly forgotten, it's already been explored a
+bunch. Here, we'll be looking into a more interesting use-case: real-time applications!
+
+[^1]: As does eBay! [Async Fragments: Rediscovering Progressive HTML Rendering with
+Marko](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko).
 
 ## Real-time chat, sans JS
 
