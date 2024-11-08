@@ -23,7 +23,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Data.Text.IO as I
 import Data.Time (UTCTime, defaultTimeLocale, formatTime, getCurrentTime, secondsToDiffTime)
-import Network.HTTP.Req (POST (POST), ReqBodyJson (ReqBodyJson), defaultHttpConfig, ignoreResponse, req, runReq, useHttpsURI)
+import Network.HTTP.Req (HttpConfig (httpConfigRetryPolicy), POST (POST), ReqBodyJson (ReqBodyJson), defaultHttpConfig, ignoreResponse, req, runReq, useHttpsURI)
 import Network.Wai (StreamingBody)
 import Network.Wai.Application.Static (StaticSettings (..), defaultWebAppSettings, staticApp)
 import Network.Wai.Middleware.Autohead (autohead)
@@ -39,6 +39,8 @@ import WaiAppStatic.Types (Piece (fromPiece), unsafeToPiece)
 import Web.ClientSession (Key, decrypt, encryptIO, getKeyEnv)
 import Web.Scotty (ActionM, formParam, get, liftIO, middleware, nested, notFound, post, redirect, scotty, setHeader, stream)
 import Web.Scotty.Cookie (SetCookie (..), getCookie, sameSiteStrict, setCookie)
+import Control.Retry (exponentialBackoff, limitRetries)
+import Control.Exception (try, handle, SomeException (SomeException))
 
 main :: IO ()
 main = do
@@ -124,22 +126,28 @@ proxyMessages chat webhook = do
   chat <- atomically $ dupTChan chat
   forever $ do
     msg <- atomically $ readTChan chat
-    runReq defaultHttpConfig $ do
-      req
-        POST
-        (fst $ fromJust $ useHttpsURI webhook)
-        ( ReqBodyJson
-            ( object
-                [ "content" .= escapeText msg.text
-                , "username" .= msg.nick
-                , "allowed_mentions" .= allowedMentions
-                ]
-            )
-        )
-        ignoreResponse
-        mempty
+    handle ((\_ -> return ()) :: SomeException -> IO ()) $ do
+      void $ runReq httpConf $ do
+        req
+          POST
+          (fst $ fromJust $ useHttpsURI webhook)
+          ( ReqBodyJson
+              ( object
+                  [ "content" .= escapeText msg.text
+                  , "username" .= msg.nick
+                  , "allowed_mentions" .= allowedMentions
+                  ]
+              )
+          )
+          ignoreResponse
+          mempty
   where
     allowedMentions = object ["parse" .= ([] :: [()])]
+
+    httpConf =
+      defaultHttpConfig
+        { httpConfigRetryPolicy = exponentialBackoff 50000 <> limitRetries 10
+        }
 
     escapeText = T.concatMap $ \case
       c | c `elem` ("#*<>\\^_`~" :: String) -> T.snoc "\\" c
