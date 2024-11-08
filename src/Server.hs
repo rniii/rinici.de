@@ -8,7 +8,9 @@ module Main (main) where
 import Control.Concurrent (forkIO)
 import Control.Concurrent.STM (atomically, dupTChan, newBroadcastTChanIO)
 import Control.Concurrent.STM.TChan (TChan, readTChan, writeTChan)
+import Control.Exception (SomeException, handle)
 import Control.Monad (forever, unless, void, when)
+import Control.Retry (exponentialBackoff, limitRetries)
 import Data.Aeson (object)
 import Data.Aeson.Types ((.=))
 import qualified Data.Binary.Builder as BB
@@ -28,7 +30,6 @@ import Network.Wai (StreamingBody)
 import Network.Wai.Application.Static (StaticSettings (..), defaultWebAppSettings, staticApp)
 import Network.Wai.Middleware.Autohead (autohead)
 import Network.Wai.Middleware.Gzip (GzipFiles (..), GzipSettings (..), gzip)
-import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import System.Environment.Blank (getEnv, getEnvDefault)
 import System.Random (randomRIO)
 import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
@@ -39,8 +40,6 @@ import WaiAppStatic.Types (Piece (fromPiece), unsafeToPiece)
 import Web.ClientSession (Key, decrypt, encryptIO, getKeyEnv)
 import Web.Scotty (ActionM, formParam, get, liftIO, middleware, nested, notFound, post, redirect, scotty, setHeader, stream)
 import Web.Scotty.Cookie (SetCookie (..), getCookie, sameSiteStrict, setCookie)
-import Control.Retry (exponentialBackoff, limitRetries)
-import Control.Exception (try, handle, SomeException (SomeException))
 
 main :: IO ()
 main = do
@@ -53,7 +52,6 @@ main = do
 
   scotty port $ do
     middleware autohead
-    middleware logStdoutDev
     middleware $ gzip def{gzipFiles = GzipPreCompressed GzipIgnore}
 
     get "/chat/history" $ do
@@ -169,9 +167,11 @@ renderMessage msg = renderHtml $ H.article $ do
     fmtTime = T.pack . formatTime defaultTimeLocale "%d/%m/%y %R"
 
 isValidNick :: Text -> Bool
-isValidNick nick
-  | nick == "rini" = False
-  | otherwise = T.all (`elem` " -" ++ ['0' .. '9'] ++ ['A' .. 'Z'] ++ ['a' .. 'z'] ++ "_") nick
+isValidNick nick =
+  T.toCaseFold nick /= T.toCaseFold "rini"
+    && T.compareLength nick 32 == LT
+    && T.length nick > 2
+    && T.all (`elem` " -" ++ ['0' .. '9'] ++ ['A' .. 'Z'] ++ ['a' .. 'z'] ++ "_") nick
 
 data Message
   = Message {nick :: Text, text :: Text, time :: UTCTime}
