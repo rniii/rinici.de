@@ -142,7 +142,7 @@ proxyMessages chat webhook = do
     allowedMentions = object ["parse" .= ([] :: [()])]
 
     escapeText = T.concatMap $ \case
-      c | c `elem` ("#*<>_^`~" :: String) -> T.snoc "\\" c
+      c | c `elem` ("#*<>\\^_`~" :: String) -> T.snoc "\\" c
       c -> T.singleton c
 
 renderMessage :: Message -> LazyByteString
@@ -161,8 +161,9 @@ renderMessage msg = renderHtml $ H.article $ do
     fmtTime = T.pack . formatTime defaultTimeLocale "%d/%m/%y %R"
 
 isValidNick :: Text -> Bool
-isValidNick =
-  T.all (`elem` " -" ++ ['0' .. '9'] ++ ['A' .. 'Z'] ++ ['a' .. 'z'] ++ "_")
+isValidNick nick
+  | nick == "rini" = False
+  | otherwise = T.all (`elem` " -" ++ ['0' .. '9'] ++ ['A' .. 'Z'] ++ ['a' .. 'z'] ++ "_") nick
 
 data Message
   = Message {nick :: Text, text :: Text, time :: UTCTime}
