@@ -65,6 +65,7 @@ home posts = layout head $ do
       -- , ("https://ko-fi.com/rniii", "ko-fi.com/rniii")
       , ("https://wetdry.world/@rini", "@wetdry.world@rini")
       , ("mailto:rini%40rinici.de", "rini" <> H.span "@" <> "rinici.de")
+      , ("/pgp.asc", code "PGP.ASC")
       ]
     buttons =
       [ ("https://rinici.de/", "/buttons/rinicide.png")
