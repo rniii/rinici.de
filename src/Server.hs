@@ -83,8 +83,9 @@ chatSend :: AppState -> Session -> Text -> ActionM ()
 chatSend app sess text | "/" `T.isPrefixOf` text =
   case T.break (== ' ') text of
     ("/nick", nick) ->
-      when (isValidNick nick) $ do
-        setSession app Session{nick = nick}
+      let nick' = T.strip nick in
+      when (isValidNick nick') $ do
+        setSession app Session{nick = nick'}
     ("/me", text) ->
       unless (T.all isSpace text) $ do
         sendMessage app $ Action sess.nick text
@@ -167,11 +168,11 @@ renderMessage msg = renderHtml $ H.article $ do
     fmtTime = T.pack . formatTime defaultTimeLocale "%d/%m/%y %R"
 
 isValidNick :: Text -> Bool
-isValidNick nick =
-  T.toCaseFold nick /= T.toCaseFold "rini"
-    && T.compareLength nick 32 == LT
-    && T.length nick > 2
-    && T.all (`elem` " -" ++ ['0' .. '9'] ++ ['A' .. 'Z'] ++ ['a' .. 'z'] ++ "_") nick
+isValidNick nick
+  | T.toCaseFold nick == "rini" = False
+  | GT <- T.compareLength nick 32 = False
+  | T.length nick < 2 = False
+  | otherwise = T.all (`elem` " -" ++ ['0' .. '9'] ++ ['A' .. 'Z'] ++ ['a' .. 'z'] ++ "_") nick
 
 data Message
   = Message {nick :: Text, text :: Text, time :: UTCTime}
