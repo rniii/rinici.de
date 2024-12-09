@@ -69,16 +69,16 @@ home posts = layout head $ do
       ]
     buttons =
       [ ("https://rinici.de/", "/buttons/rinicide.png")
+      , ("https://exhq.dev", "https://exhq.dev/88x31.png")
       , ("https://authenyo.xyz", "/buttons/authen.gif")
-      , ("https://sheepy.moe", "/buttons/sheepy.gif")
       , ("https://velzie.rip", "https://velzie.rip/88x31.png")
+      , ("https://sheepy.moe", "/buttons/sheepy.gif")
       , ("https://blueb.pages.gay", "/buttons/harper.gif")
       , ("https://w.on-t.work", "/buttons/wontwork.png")
       , ("https://tengu.space", "/buttons/tengu.gif")
       , ("https://smokepowered.com", "/buttons/smoke.gif")
       , ("steam://launch/70", "/buttons/hl.gif")
       , ("https://book.realworldhaskell.org/read/getting-started.html", "/buttons/haskell.gif")
-      , ("https://github.com/anguishjs", "/buttons/anguish.gif")
       , ("viewsource://rinici.de/", "/buttons/somejs.gif")
       ]
 
