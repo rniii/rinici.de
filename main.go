@@ -12,7 +12,7 @@ import (
 	"github.com/diamondburned/arikawa/v3/session"
 )
 
-const chatURL = "https://rinici.de/chat/history"
+const chatURL = "http://localhost:45067/chat/history"
 const relayID = 1316180922697257061
 
 var chatSession string
