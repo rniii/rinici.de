@@ -83,9 +83,9 @@ chatSend :: AppState -> Session -> Text -> ActionM ()
 chatSend app sess text | "/" `T.isPrefixOf` text =
   case T.break (== ' ') text of
     ("/nick", nick) ->
-      let nick' = T.strip nick in
-      when (isValidNick nick') $ do
-        setSession app Session{nick = nick'}
+      let nick' = T.strip nick
+       in when (isValidNick nick') $ do
+            setSession app Session{nick = nick'}
     ("/me", text) ->
       unless (T.all isSpace text) $ do
         sendMessage app $ Action sess.nick text
@@ -125,21 +125,23 @@ proxyMessages chat webhook = do
   chat <- atomically $ dupTChan chat
   forever $ do
     msg <- atomically $ readTChan chat
-    handle ((\_ -> return ()) :: SomeException -> IO ()) $ do
-      void $ runReq httpConf $ do
-        req
-          POST
-          (fst $ fromJust $ useHttpsURI webhook)
-          ( ReqBodyJson
-              ( object
-                  [ "content" .= escapeText msg.text
-                  , "username" .= msg.nick
-                  , "allowed_mentions" .= allowedMentions
-                  ]
-              )
-          )
-          ignoreResponse
-          mempty
+    if msg.nick == "bridge"
+      then return ()
+      else handle ((\_ -> return ()) :: SomeException -> IO ()) $ do
+        void $ runReq httpConf $ do
+          req
+            POST
+            (fst $ fromJust $ useHttpsURI webhook)
+            ( ReqBodyJson
+                ( object
+                    [ "content" .= escapeText msg.text
+                    , "username" .= msg.nick
+                    , "allowed_mentions" .= allowedMentions
+                    ]
+                )
+            )
+            ignoreResponse
+            mempty
   where
     allowedMentions = object ["parse" .= ([] :: [()])]
 
@@ -170,6 +172,7 @@ renderMessage msg = renderHtml $ H.article $ do
 isValidNick :: Text -> Bool
 isValidNick nick
   | T.toCaseFold nick == "rini" = False
+  | T.toCaseFold nick == "bridge" = False
   | GT <- T.compareLength nick 32 = False
   | T.length nick < 2 = False
   | otherwise = T.all (`elem` " -" ++ ['0' .. '9'] ++ ['A' .. 'Z'] ++ ['a' .. 'z'] ++ "_") nick

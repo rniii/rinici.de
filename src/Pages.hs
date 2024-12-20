@@ -20,7 +20,9 @@ home posts = layout head $ do
       preEscapedText posts
 
     h2 "Intra Relay Cat"
-    blockquote $ p "No JavaScript required!"
+    blockquote $ p $ do
+      "No JavaScript required! Messages are proxied to "
+      a ! href "https://discord.gg/z8BdAERNEP" $ "Discord"
     H.div ! class_ "frame" $ do
       iframe mempty ! src "/chat/history" ! A.id "chat"
       iframe mempty ! src "/chat"
