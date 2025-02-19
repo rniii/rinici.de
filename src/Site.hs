@@ -3,10 +3,8 @@
 
 module Main (main) where
 
-import Pages
-
 import Control.Monad (forM_, when)
-import Control.Monad.Reader (MonadIO (liftIO), ReaderT (runReaderT), MonadReader, asks)
+import Control.Monad.Reader (MonadIO (liftIO), MonadReader, ReaderT (runReaderT))
 import Control.Monad.State (MonadState, StateT, execStateT, modify)
 import Data.Bool (bool)
 import qualified Data.ByteString as BS
@@ -14,12 +12,12 @@ import Data.ByteString.Lazy (ByteString)
 import qualified Data.ByteString.Lazy as B
 import Data.Char (isDigit)
 import Data.Functor ((<&>))
-import Data.List ((\\), intercalate)
+import Data.List ((\\))
 import Data.Maybe (fromMaybe)
 import qualified Data.Text.Encoding as E
 import System.Directory (createDirectoryIfMissing, doesDirectoryExist, getModificationTime, listDirectory, removeFile)
 import System.Environment (getExecutablePath)
-import System.FilePath (combine, joinPath, replaceExtension, splitFileName, splitPath, takeDirectory, splitDirectories, dropExtensions)
+import System.FilePath (combine, joinPath, replaceExtension, splitFileName, splitPath, takeDirectory)
 import System.IO (hClose)
 import System.IO.Error (catchIOError)
 import System.IO.Temp (withSystemTempFile)
@@ -34,20 +32,24 @@ main = compileAll $ do
     output $ joinPath . tail . splitPath
   transformDir "styles" $ do
     compiler esbuildCss
+  transformDir "client" $ do
+    output $ extension "js"
+    compiler esbuildJs
   transformDir "posts" $ do
     -- yyyy-mm-dd-post -> post
     output $ uncurry combine . fmap removeDate . splitFileName
     output $ extension "html"
+    blogTemplate <- readProcessStdout_ "runhaskell src/Pages.hs blog"
     compiler $ pandoc blogTemplate
   transformDir "pages" $ do
     output $ joinPath . tail . splitPath
     output $ extension "html"
+    pageTemplate <- readProcessStdout_ "runhaskell src/Pages.hs page"
     compiler $ pandoc pageTemplate
-  writeTo "index.html" $ do
-    posts <- readProcessStdout_ "maid -q generate-list" <&> E.decodeUtf8 . BS.toStrict
-    minifyHtml $ renderHtml $ home posts
-  writeTo "chat.html" $ do
-    minifyHtml $ renderHtml chat
+  writeTo' "index.html" "src/Pages.hs" $ do
+    posts <- readProcessStdout_ "maid -q generate-list"
+    home <- readProcessStdout_ (setStdin (byteStringInput posts) "runhaskell src/Pages.hs home")
+    minifyHtml home
   writeTo "posts/atom.xml" $ do
     readProcessStdout_ "maid -q generate-feed"
   where
@@ -80,6 +82,10 @@ writeTo :: FilePath -> IO ByteString -> Rules ()
 writeTo path body =
   addResources [Resource Nothing path (liftIO body)]
 
+writeTo' :: FilePath -> FilePath -> IO ByteString -> Rules ()
+writeTo' path dep body =
+  addResources [Resource (Just dep) path (liftIO body)]
+
 transformDir :: FilePath -> Action () -> Rules ()
 transformDir path body =
   (>>= addResources) $ liftIO $ traverseDirectory path $ \p ->
@@ -101,14 +107,17 @@ output :: (FilePath -> FilePath) -> Action ()
 output f =
   modify $ \r -> r{rsOutput = f $ rsOutput r}
 
-pandoc :: Html -> ByteString -> Compiler ByteString
+pandoc :: ByteString -> ByteString -> Compiler ByteString
 pandoc template bs = do
-  input <- asks (intercalate " > " . splitDirectories . dropExtensions . rsOutput)
   liftIO $ withSystemTempFile "tmpl.html" $ \p h -> do
-    B.hPutStr h $ renderHtml template
+    B.hPutStr h template
     hClose h
-    pipe "pandoc" ["-fmarkdown-auto_identifiers-smart", "--wrap=none", "--template", p, "-Vpath:" ++ input] bs
+    pipe "pandoc" ["-fmarkdown-auto_identifiers-smart", "--wrap=none", "--template", p] bs
       >>= minifyHtml
+
+esbuildJs :: ByteString -> Compiler ByteString
+esbuildJs =
+  pipe "esbuild" ["--minify", "--loader=ts", "--bundle"]
 
 esbuildCss :: ByteString -> Compiler ByteString
 esbuildCss =
@@ -121,7 +130,7 @@ compiler c =
 minifyHtml :: ByteString -> IO ByteString
 minifyHtml =
   pipe
-    "minhtml"
+    "minify-html"
     -- please ...
     [ "--do-not-minify-doctype"
     , "--ensure-spec-compliant-unquoted-attribute-values"

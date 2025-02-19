@@ -28,11 +28,6 @@ Marko](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscove
 
 ## Real-time chat, sans JS
 
-::: info
-For a live version of this, [check the home page!](/) The source code of this example can also be
-found [here](https://gist.github.com/rniii/f29b822e8ef6d8017cbc870411d441e4).
-:::
-
 Here's a simple webpage to get started with. We'll be embedding the magic chat endpoint into an
 iframe, and have a little form to send messages:
 

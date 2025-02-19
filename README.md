@@ -10,7 +10,7 @@ otherwise, all text, media and other content is licensed under the CC BY-SA 4.0 
 ### generate
 
 ```sh
-cabal run -v0 site
+runhaskell src/Site.hs
 ```
 
 ### meta
@@ -79,13 +79,6 @@ echo "Created $post"
 
 ```sh
 maid -w . generate &
-maid serve &
 live-server --middleware=$(realpath mw.js) --proxy=/chat/history:http://localhost:8000/chat/history _site &
 wait
-```
-
-### serve
-
-```sh
-cabal run -v0 server
 ```

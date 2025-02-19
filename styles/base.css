@@ -1,3 +1,5 @@
+/* --- font --------------------------- {{{1 */
+
 @font-face {
   font-family: "Source Sans 3";
   font-weight: 200 900;
@@ -10,6 +12,8 @@
   src: url(/assets/ss3i.woff2) format(woff2);
 }
 
+/* }}} */
+
 :root {
   color: #d8d0d5;
   background: linear-gradient(#b68ec8e0, #9161a9d0),
@@ -19,20 +23,19 @@
 }
 
 body {
-  background: #202020;
-  margin: 0;
+  display: grid;
   gap: 8px;
-  box-shadow: 0 8px 24px #0005;
+  max-width: 42em;
+  margin: 0;
+  padding: 8px;
   overflow-wrap: anywhere;
 }
 
 header,
 main,
 section,
-footer,
-nav {
+footer {
   background: linear-gradient(#151515 80%, #1a1a1a);
-  border: 2px solid #000;
   padding: 0 1em;
 }
 footer {
@@ -51,7 +54,30 @@ h3 {
   margin: 1rem 0;
   border-bottom: 2px solid #333;
 }
+h1 {
+  font-size: 1.8em;
+}
+header p {
+  color: #ababab; 
+}
+nav {
+  text-align: right;
+  margin: 0 -1em;
+  background: repeating-linear-gradient(-45deg, #202020 0 1em, #d895ee 1em 2em);
+  a {
+    display: inline-block;
+    font-weight: normal;
+    padding: 0 1em;
+    text-decoration: none;
+    background: #151515;
+  }
+}
 
+a[href="/"]::before {
+  content: "";
+}
+
+/** block {{{1 ****************************************************************/
 blockquote {
   border: transparent 2px solid;
   border-left: #333 4px solid;
@@ -80,21 +106,6 @@ ul code {
   border-radius: 4px;
 }
 
-strong {
-  color: #e8d097;
-}
-b {
-  color: #ca97e8;
-}
-a,
-a code {
-  color: #d895ee;
-}
-
-sup {
-  font-size: 0.7em;
-}
-
 ul li::marker {
   content: "⇒ ";
   color: #979ae8;
@@ -111,15 +122,92 @@ pre {
   padding: 8px;
 }
 
-input {
-  all: unset;
-  background: #0004;
-  padding: 6px 12px;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 6px;
+.info {
+  background: #232635;
+  border: 2px solid #2f354e;
+  border-left: 4px solid #979ae8;
+  border-radius: 4px;
+  padding: 0 2ch;
+  p::before {
+    color: #979ae8;
+    content: "🛈 Note ";
+    display: block;
+  }
+}
+.footnotes {
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.footnote-back {
+  margin-left: 0.5ch;
 }
 
-iframe {
-  border: none;
+.meta {
+  color: #ababab;
+  border-bottom: #333 2px solid;
+}
+
+/** inline {{{1 ***************************************************************/
+strong {
+  color: #e8d097;
+}
+b {
+  color: #ca97e8;
+}
+a,
+a code {
+  color: #d895ee;
+}
+
+sup {
+  font-size: 0.7em;
+}
+
+.footnote-ref {
+  text-decoration: none;
+  sup {
+    text-decoration: underline;
+  }
+  sup::before {
+    content: "[";
+  }
+  sup::after {
+    content: "]";
+  }
+}
+
+.keyword {
+  color: #d895ee;
+  font-weight: bold;
+}
+
+code.sourceCode {
+  color: #d8d0d5;
+}
+.kw {
+  color: #ca97e8;
+}
+.dt,
+.ot,
+.op {
+  color: #97d0e8;
+}
+.dv,
+.pp {
+  color: #ee95d2;
+}
+.bu {
+  color: #e8d097;
+}
+.st {
+  color: #9be099;
+}
+.co {
+  color: #909090;
+}
+.fu,
+.at {
+  color: #979ae8;
 }
