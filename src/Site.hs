@@ -17,7 +17,7 @@ import Data.Maybe (fromMaybe)
 import qualified Data.Text.Encoding as E
 import System.Directory (createDirectoryIfMissing, doesDirectoryExist, getModificationTime, listDirectory, removeFile)
 import System.Environment (getExecutablePath)
-import System.FilePath (combine, joinPath, replaceExtension, splitFileName, splitPath, takeDirectory)
+import System.FilePath (combine, dropExtension, joinPath, replaceExtension, splitFileName, splitPath, takeDirectory)
 import System.IO (hClose)
 import System.IO.Error (catchIOError)
 import System.IO.Temp (withSystemTempFile)
@@ -38,12 +38,12 @@ main = compileAll $ do
   transformDir "posts" $ do
     -- yyyy-mm-dd-post -> post
     output $ uncurry combine . fmap removeDate . splitFileName
-    output $ extension "html"
+    output indexHtml
     blogTemplate <- readProcessStdout_ "runhaskell src/Pages.hs blog"
     compiler $ pandoc blogTemplate
   transformDir "pages" $ do
     output $ joinPath . tail . splitPath
-    output $ extension "html"
+    output indexHtml
     pageTemplate <- readProcessStdout_ "runhaskell src/Pages.hs page"
     compiler $ pandoc pageTemplate
   writeTo' "index.html" "src/Pages.hs" $ do
@@ -56,6 +56,7 @@ main = compileAll $ do
     removeDate = removePart . removePart . removePart
     removePart = dropWhile (== '-') . dropWhile isDigit
     extension = flip replaceExtension
+    indexHtml = (`combine` "index.html") . dropExtension
 
 compileAll :: Rules () -> IO ()
 compileAll rules = do
