@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#d895ee">
+  <link rel="icon" href="data:image/gif;base64,R0lGODdhIAAgAHcAACH5BAkKAAAALAAAAAAgACAAgAAAAP///wJVhI+py+0Po5ww2Iuzvmvj5FlKGHQeGDIpQqqrQcYbK9cibNtHruN8vPsBfTMK6mUEDJPKFpOoeUIzktLI6fjQkCZqkLvVfsHN6BFJLgtv0rb7DY9LCwA7">
+  <link rel="stylesheet" href="/styles/base.css">
+  $if(author)$
+  <link rel="author" href="$author.url$">
+  $endif$
+  $if(subtitle)$
+  <meta name="description" content="$subtitle$">
+  $endif$
+  $for(head)$
+  $head$
+  $endfor$
+
+  <body>
+    <header>
+      <h1>$title$</h1>
+      $if(subtitle)$
+      <p><i>$subtitle$</i></p>
+      $endif$
+      <nav>
+        <a href="/">Home</a>
+      </nav>
+    </header>
+    <main>
+      $body$
+    </main>
+    <footer>
+      <p>
+        <b>©</b> 2024 rini · 🅭 🅯 🄎 <a href="https://creativecommons.org/licenses/by-sa/4.0/"
+          rel="license">CC-BY-SA-4.0</a>
+      </p>
+    </footer>
+  </body>
+</html>

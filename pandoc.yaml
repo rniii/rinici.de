@@ -1,0 +1,3 @@
+template: template.html
+reader:   markdown-auto_identifiers-smart+shortcut_reference_links
+wrap:     none

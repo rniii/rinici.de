@@ -13,20 +13,17 @@ otherwise, all text, media and other content is licensed under the CC BY-SA 4.0 
 runhaskell src/Site.hs
 ```
 
+### regenerate
+
+```sh
+touch pages/* posts/*
+```
+
 ### meta
 
 ```sh
 find posts/*.md \
   -exec yq '.url = ("/{}" | sub("/\d{4}-\d\d-\d\d-", "/") | sub("\.md$", ""))' -f extract '{}' ';'
-```
-
-### generate-list
-
-```sh
-maid -q meta | \
-  yq ea 'with_dtf("Jan. 2 2006";
-    [.] | sort_by(.date) | reverse[]
-        | "<article><h3><a href=\"\(.url)\">\(.title)</a></h3><p>\(.subtitle)</p></article>")'
 ```
 
 ### generate-feed
@@ -36,24 +33,31 @@ maid -q meta | \
   yq ea -oxml '(
     { "+p_xml": "version=\"1.0\" encoding=\"utf-8\""
     , "feed":
-      { "+@xmlns": "http://www.w3.org/2005/Atom"
-      , "title": "rini blog"
+      { "+@xmlns":  "http://www.w3.org/2005/Atom"
+      , "title":    "rini blog"
       , "link":
-        [ {"+@href": "http://rinici.de/"}
-        , {"+@href": "http://rinici.de/posts/atom.xml", "+@rel": "self"}
+        [ { "+@href": "http://rinici.de/" }
+        , { "+@href": "http://rinici.de/posts/atom.xml"
+          , "+@rel":  "self"
+          }
         ]
-      , "icon": "/ico.png"
-      , "rights": "© 2024 rini"
-      , "id": "https://rinici.de/"
-      , "updated": now | tz("UTC")
-      , "entry": [.] | sort_by(.date) | reverse[] |
-        { "title": .title
-        , "author": (.author | (select(type == "!!seq").0 // .) | {"name": .name, "uri": .url})
-        , "link": {"+@href": .url}
-        , "id": "https://rinici.de" + .url
-        , "updated": .date | with_dtf("Jan. 2, 2006"; format_datetime("2006-01-02T15:04:05Z07:00"))
-        , "content": {"+@src": .url, "+@type": "html"}
-        , "summary": .subtitle
+      , "icon":     "/ico.png"
+      , "rights":   "© 2024 rini"
+      , "id":       "https://rinici.de/"
+      , "updated":  now | tz("UTC")
+      , "entry":
+        [.] | sort_by(.date) | reverse[] |
+        { "title":    .title
+        , "author":
+          ( .author |
+            ( select(type == "!!seq").0 // . ) |
+            { "name": .name, "uri": .url }
+          )
+        , "link":     { "+@href": .url }
+        , "id":       "https://rinici.de" + .url
+        , "updated":  .date | with_dtf("Jan. 2, 2006"; format_datetime("2006-01-02T15:04:05Z07:00"))
+        , "content":  { "+@src": .url, "+@type": "html" }
+        , "summary":  .subtitle
         }
       }
     })'
