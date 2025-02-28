@@ -2,5 +2,5 @@
 I=C.createImageData(90,31),f=0,a=44
 D=new Int32Array(I.data.buffer)
 setInterval(_=>{for(i=2700;i--;i%90&&-~i%90&&D[i]&&(D[i+90]?D[i+89+j]=(D[i]=D[i+89+j])?D[i+91-j]||=~(D[i]=0):-1:D[i]=0,D[i+90]=-1))j=(Math.random()<0.5)*2
-D[a]^=(f^=1)
+D[a]^=f^=-1
 C.putImageData(I,-1,0)},33)"bgcolor=#222><canvas id=c onmousemove=e=event,a=e.offsetX+e.offsetY*90+1 onmouseleave=a=44>
