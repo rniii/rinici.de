@@ -2,7 +2,7 @@
 title: The Cursed Art of Streaming HTML
 subtitle: Or, how I wrote a live chat without JavaScript
 author:
-- name: rini
+  name: rini
   url: https://rinici.de/
 date: Nov. 07, 2024
 ---
@@ -26,7 +26,7 @@ bunch. Here, we'll be looking into a more interesting use-case: real-time applic
 [^1]: As does eBay! [Async Fragments: Rediscovering Progressive HTML Rendering with
 Marko](https://innovation.ebayinc.com/tech/engineering/async-fragments-rediscovering-progressive-html-rendering-with-marko).
 
-## Real-time chat, sans JS
+## Real-time chat, sans JS {#rtc-sans-js}
 
 Here's a simple webpage to get started with. We'll be embedding the magic chat endpoint into an
 iframe, and have a little form to send messages:

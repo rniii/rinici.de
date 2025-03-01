@@ -1,5 +1,6 @@
 ---
 title: rinici.de
+subtitle: powered by systemd <3
 head:
 - <link rel=alternate type=application/atom+xml href=/posts/atom.xml title="Blog posts">
 ---
@@ -7,6 +8,7 @@ head:
 ## Blog posts [![Feed]](/posts/atom.xml)
 
 - [The Cursed Art of Streaming HTML](/posts/streaming-html)
+- [Using Pandoc for your documents](/posts/pandoc)
 
 [feed]: /rss.gif "Atom feed"
 
@@ -41,8 +43,11 @@ I'll likely be able to reply if you DM me on fedi or send me an email
 [![june]](https://girlboss.ceo/)
 [![amy]](https://amy.rip/)
 [![devi]](https://tengu.space/)
-[![authen]](https://authenyo.xyz/)
+[![melontini]](https://melontini.me/)
+[![unnick]](https://beepi.ng/)
+[![doskel]](https://doskel.net/)
 [![velzie]](https://velzie.rip/)
+[![authen]](https://authenyo.xyz/)
 [![sheepy]](https://sheepy.moe/)
 [![harper]](https://blueb.pages.gay/)
 [![kopper]](https://w.on-t.work/)
@@ -62,20 +67,22 @@ I'll likely be able to reply if you DM me on fedi or send me an email
 </a>
 ```
 
-[rini]:     /buttons/rinicide.png {width=88 height=31}
-[mary]:     /buttons/mary.webp {width=88 height=31}
-[meowd]:    https://meow-d.github.io/assets/images/buttons/meow_d.webp {width=88 height=31}
-[miyuko]:   https://calayucu.com/button-88x31.png {width=88 height=31}
-[em]:       https://badges.easrng.net/easrng.gif {width=88 height=31}
-[june]:     /buttons/june.png {width=88 height=31}
-[amy]:      https://amy.rip/88x31.png {width=88 height=31}
-[devi]:     /buttons/tengu.gif {width=88 height=31}
-[authen]:   /buttons/authen.gif {width=88 height=31}
-[velzie]:   https://velzie.rip/88x31.png {width=88 height=31}
-[sheepy]:   /buttons/sheepy.gif {width=88 height=31}
-[harper]:   /buttons/harper.gif {width=88 height=31}
-[kopper]:   /buttons/wontwork.png {width=88 height=31}
-
-[smoke-powered]:  /buttons/smoke.gif {width=88 height=31}
-[half-life]:      /buttons/hl.gif {width=88 height=31}
-[haskell]:        /buttons/haskell.gif {width=88 height=31}
+[rini]:           /buttons/rinicide.png {width=88 height=31}
+[mary]:           /buttons/mary.webp    {width=88 height=31}
+[meowd]:          https://meow-d.github.io/assets/images/buttons/meow_d.webp {width=88 height=31}
+[miyuko]:         https://calayucu.com/button-88x31.png {width=88 height=31}
+[em]:             https://badges.easrng.net/easrng.gif {width=88 height=31}
+[june]:           /buttons/june.png     {width=88 height=31}
+[amy]:            https://amy.rip/88x31.png {width=88 height=31}
+[devi]:           /buttons/tengu.gif    {width=88 height=31}
+[melontini]:      https://melontini.me/88_31/88_31.png {width=88 height=31}
+[unnick]:         https://beepi.ng/88x31.png
+[doskel]:         https://doskel.net/button.png {width=88 height=31}
+[velzie]:         https://velzie.rip/88x31.png {width=88 height=31}
+[authen]:         /buttons/authen.gif   {width=88 height=31}
+[sheepy]:         /buttons/sheepy.gif   {width=88 height=31}
+[harper]:         /buttons/harper.gif   {width=88 height=31}
+[kopper]:         /buttons/wontwork.png {width=88 height=31}
+[smoke-powered]:  /buttons/smoke.gif    {width=88 height=31}
+[half-life]:      /buttons/hl.gif       {width=88 height=31}
+[haskell]:        /buttons/haskell.gif  {width=88 height=31}

@@ -31,7 +31,6 @@ body {
 
 header,
 main,
-section,
 footer {
   overflow-x: hidden;
   background: linear-gradient(#151515 80%, #1a1a1a);
@@ -50,7 +49,7 @@ footer {
 h1,
 h2,
 h3 {
-  margin: 1rem 0;
+  margin: 1rem 0 0;
   border-bottom: 2px solid #333;
 }
 h1 {
@@ -106,7 +105,8 @@ code {
 }
 
 p code,
-ul code {
+li > code,
+ol > code {
   background: #1d1922;
   padding: 2px 4px;
   border: 1px #30484a50 solid;
@@ -129,19 +129,38 @@ pre {
   padding: 8px;
 }
 
-.footnotes {
-  background: none;
-  border: 0;
+.footnotes p {
   margin: 0;
-  padding: 0;
 }
 .footnote-back {
   margin-left: 0.5ch;
 }
 
-.meta {
-  color: #ababab;
-  border-bottom: #333 2px solid;
+.note, .warning {
+  border-left: 2px solid;
+  padding: 0.5em 1em;
+  background: #40404020;
+  p {
+    color: #d8d0d5;
+    margin: 0.5em 0;
+  }
+}
+
+.note {
+  color: #979ae8;
+
+  &::before {
+    content: "note:";
+    font-variant: small-caps;
+  }
+}
+.warning {
+  color: #e8d097;
+
+  &::before {
+    content: "warning:";
+    font-variant: small-caps;
+  }
 }
 
 /** inline {{{1 ***************************************************************/
@@ -178,16 +197,19 @@ sup {
 code.sourceCode {
   color: #d8d0d5;
 }
-.kw {
+.kw,
+.cf {
   color: #ca97e8;
 }
 .dt,
 .ot,
-.op {
+.op,
+.in {
   color: #97d0e8;
 }
 .dv,
-.pp {
+.pp,
+.va {
   color: #ee95d2;
 }
 .bu {
@@ -200,6 +222,6 @@ code.sourceCode {
   color: #909090;
 }
 .fu,
-.at {
+.ex {
   color: #979ae8;
 }

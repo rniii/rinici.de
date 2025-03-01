@@ -83,6 +83,12 @@ echo "Created $post"
 
 ```sh
 maid -w . generate &
-live-server --middleware=$(realpath mw.js) --proxy=/chat/history:http://localhost:8000/chat/history _site &
+live-server --middleware=$(realpath mw.js) --host=0.0.0.0 _site &
 wait
+```
+
+### publish
+
+```sh
+rsync -avz --delete _site "$(cabal list-bin server)" rinici.de:web
 ```
